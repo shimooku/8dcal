@@ -11,7 +11,6 @@
 #endif
 
 /*
-	（問題３）
 	通常の数式（8桁までの整数値の四則演算のみ、括弧も使えるようにする）を入
 	力し計算結果を出力するプログラムをC++あるいはJavaにより作成せよ。一般利
 	用者が入力する可能性のある数式を出来る限り幅広く処理できるように仕様を明
@@ -239,8 +238,9 @@ tuple<RESULT, int> parse_formula(const string& formula, string& errmsg, bool req
 				std::tie(isok, num) = parse_formula(sub_formula, errmsg, require_close_parenthesis);
 				if (isok == RESULT::NG)
 					return { RESULT::NG, 0 };
-				opr_stack.emplace_back(OPRTYPE::NUMBER, num);
+				opr_stack.emplace_back(OPRTYPE::NUMBER, num * sign);
 				num = 0;
+				sign = 1;
 				if (immediately) {
 					immediately = false;
 					std::tie(isok, num) = execute_latest_three_stacks(opr_stack, errmsg);
@@ -257,9 +257,9 @@ tuple<RESULT, int> parse_formula(const string& formula, string& errmsg, bool req
 		case '-':
 			if (opr_stack.size() == 0) {
 				if (ch == '-') 
-					sign = -1;
+					sign = sign * -1;
 				else
-					sign = 1;				
+					sign = sign * 1;				
 			}
 			else {
 				OPERAND operand = opr_stack.back();
